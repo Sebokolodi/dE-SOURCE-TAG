@@ -42,17 +42,6 @@ def negative_noise_estimates(data):
 
     return negative_data.std()
 
-
-def select_bright_locations(data, noise, wcs, thresh_pix=5):
-
-    """ Select regions in an image with intensity > thresh_pix * noise. """
-
-    threshold = thresh_pix * noise
-    r, d = numpy.where(data > threshold)
-    ra, dec = wcs.all_pix2world(d, r, 0)
-     
-    return ra, dec
-
     
 def group_sources(ra, dec, data, wcs, tolerance):
 
@@ -178,6 +167,7 @@ if __name__=='__main__':
 
     add('-vth', '--variance-thresh', dest='variance_threshold', help='Local variance threshold. ' 
         'Sources with varinace > vth * noise are considered. Defautl=5.', default=5, type=float)
+
     add('-vsize', '--var-size', dest='variance_size', help='The size of the region to compute ' 
         ' the local variance. E.g vsize=10, gives a region of size = 10 * resolution.'
         ' The resolution is in pixels. Default=10', 
@@ -185,12 +175,16 @@ if __name__=='__main__':
 
     add('-cth', '--correlation-thresh', dest='correlation_threshold', help='Correlation threshold. ' 
         'Sources with correlation factor > cth are considered. Default=0.5', default=0.5, type=float)
+
     add('-csize', '--corr-size', dest='correlation_size', help='The size of the region to compute ' 
         ' correlation. see vsize. Default=5', default=5, type=int)
 
     add('-gpix', '--group-pix', dest='group_pixels', help='The size of the region to group the pixels, ' 
         ' in terms of psf-size. The psf is in degrees. e.g gpix=20, gives 20xpsf. Default=20', 
           default=20, type=float)
+
+    add('-usec', '--use-cat', dest='use_catalog', help='Use -cat for the identification and not only -i.', 
+          default=False, type=bool)
 
     add('-o', '--outpref', dest='output_prefix', help='The prefix for the output file containing '
         ' directions in RA, DEC both in degrees, and peak flux of the pixels. Default=None',
@@ -206,11 +200,23 @@ if __name__=='__main__':
     pixels = abs(hdr['CDELT2']) # in degrees
     psf_pix = int(round((psf/pixels))) # in pixels
 
-    # select bright regions from an image:
-    ra, dec = select_bright_locations(data, noise, wcs, thresh_pix=args.flux_threshold)        
-    # group the sources
-    ra, dec, peak = group_sources(ra, dec, data, wcs, tolerance= psf * args.group_pixels)        
-    # local variance
+    if args.use_catalog:
+        catalog = Tigger.load(args.catalog, verbose=False)
+        fluxes = [src.flux.I for src in catalog.sources]
+        index = numpy.where(fluxes > (args.flux_threshold * noise))[0]
+        sources  = [catalog.sources[i] for i in index]
+        ra  = numpy.asarray([float(numpy.rad2deg(src.pos.ra))  for src in sources])
+        dec = numpy.asarray([float(numpy.rad2deg(src.pos.dec)) for src in sources])
+        peak = numpy.asarray([float(numpy.rad2deg(src.flux.I)) for src in sources])
+
+    else:
+        # if not use catalog, use the image. 
+        threshold = args.flux_threshold * noise
+        r, d = numpy.where(data > threshold)
+        ra, dec = wcs.all_pix2world(d, r, 0) # in degrees
+        # Group only when using the image data
+        ra, dec, peak = group_sources(ra, dec, data, wcs, tolerance= psf * args.group_pixels)        
+    
     ra, dec, peak = compute_local_variance(ra, dec, peak, data, wcs, noise, 
              thresh=args.variance_threshold, region_in_psfs=args.variance_size,
              psf_pix=psf_pix, mask_peak=False)
@@ -239,15 +245,15 @@ if __name__=='__main__':
     output.close()
 
     if args.catalog:
+
         # if a catalog is provided, then tag the sources.
-        lsm = Tigger.load(args.catalog, verbose=False)
-        directions = Tigger.load(outfile + '.txt', verbose=False)
+        lsm = Tigger.load(args.catalog)
+        directions = Tigger.load(outfile + '.txt')
         tolerance = args.group_pixels * numpy.deg2rad(psf)
         for src in lsm.sources:
-            rapos = src.pos.ra
-            decpos = src.pos.dec
+            rapos  = src.pos.ra # in radians
+            decpos = src.pos.dec # in radians
             within = directions.getSourcesNear(rapos, decpos, tolerance)
-            ##TODO: it doesn't seem to want to tag!.
             if len(within) > 0:
                  src.setTag('dE', True)
         lsm.save(args.catalog)
