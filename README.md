@@ -1,4 +1,4 @@
-# pyDDI 
+# pyddi
 
 This tool is for identifying regions in an image that require direction-dependent calibration. It does this mainly based on an image rather than the sky model. It returns a Tigger sky model with locations of the directions of interest in terms of ra and dec (in degrees), note that this sky model should never be used for anything else other than reference location. The user can supply the actual sky model in which the tool will tag the sources that corresponds to the above directions.
 
