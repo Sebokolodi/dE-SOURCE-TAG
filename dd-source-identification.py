@@ -37,6 +37,7 @@ def read_data(image, freq=False):
 def negative_noise_estimates(data):
 
     """ Computes negative data """
+
     data = data[data < 0]
     negative_data = numpy.concatenate((data, -data))
 
@@ -47,7 +48,8 @@ def group_sources(ra, dec, data, wcs, tolerance):
 
     """ Groups the sources within < tolerance """
 
-
+    print('>>> Grouping %d pixels into regions of %.3f degrees.'
+          %(len(ra), tolerance))
     pos_world_peak = []
     pos_pixel_peak = []
     peak_flux = []
@@ -67,12 +69,15 @@ def group_sources(ra, dec, data, wcs, tolerance):
         
         pos_pixels  = [int(pos_pixel[0][peak_index]), int(pos_pixel[1][peak_index])]
         if pos_pixels not in pos_pixel_peak: 
-            pos_world_peak.append([float(pos_world[0][peak_index]), float(pos_world[1][peak_index])])
+            pos_world_peak.append([float(pos_world[0][peak_index]), 
+                float(pos_world[1][peak_index])])
             pos_pixel_peak.append(pos_pixels)
             peak_flux.append(flux[peak_index])
            
     ra = numpy.array([r[0] for r in pos_world_peak])   
     dec = numpy.array([d[1] for d in pos_world_peak])
+ 
+    print('>>> Grouping done!. We now have %d pixels.'%len(ra))
 
     return ra, dec, numpy.asarray(peak_flux)
 
@@ -82,6 +87,9 @@ def compute_local_variance(ra, dec, peak, data, wcs, noise, thresh,
              region_in_psfs, psf_pix, mask_peak=True):
     
     """ Computes local variance around the source of interest."""
+
+    print('>>> Computing the local variance around %d'
+    ' sources.'%len(ra))
 
     nx, ny = data.shape
     pos_ra, pos_dec , flux = [], [], []
@@ -100,24 +108,33 @@ def compute_local_variance(ra, dec, peak, data, wcs, noise, thresh,
                     sub_region = data[y-size: y+size, x-size: x+size]
                 sub_region = sub_region.flatten()
                 sub_region = sub_region[~numpy.isnan(sub_region)]
-                local_variance = sub_region.std()
-
+                if len(sub_region) > 0:
+                    local_variance = sub_region.std()  
+                else:
+                    local_variance = 0               
         else:
             local_variance = 0
          
+
         if abs(local_variance) > thresh * noise:
             pos_ra.append(r)
             pos_dec.append(d) 
             flux.append(peak[i])
-  
+
+    print('>>> That run was successful, a total of %d sources have'
+          ' high local variance %d times the noise.' %(len(pos_ra), thresh))  
+
     return numpy.asarray(pos_ra), numpy.asarray(pos_dec), numpy.asarray(flux)
 
 
 
-def compute_correlation(ra, dec, peak, data, psfimage, psf_pix, 
+def compute_correlation(ra, dec, peak, data, psfimage, wcs, psf_pix, 
          region_in_psfs=5, thresh=0.6):
 
     """ Correlates a subregion in an image with the PSF """
+
+    print('>>> Attempting to correlate the %d'
+    ' sources with the PSF.'%len(ra))
 
     size = region_in_psfs * psf_pix # in pixels
     psfdata, psfhdr, pwcs = read_data(psfimage)
@@ -128,6 +145,7 @@ def compute_correlation(ra, dec, peak, data, psfimage, psf_pix,
 
     nx, ny = data.shape
     pos_ra, pos_dec , flux = [], [], []
+
     
     for i, (r, d) in enumerate(zip(ra, dec)):
         x, y = wcs.all_world2pix(r, d, 0)
@@ -147,11 +165,16 @@ def compute_correlation(ra, dec, peak, data, psfimage, psf_pix,
             pos_ra.append(r)
             pos_dec.append(d)
             flux.append(peak[i])
+
+    print('>>> It seems to have ran successful, leaving us with a'
+          ' total of %d sources.'%len(pos_ra))
+
     return numpy.asarray(pos_ra), numpy.asarray(pos_dec), numpy.asarray(flux)
 
 
+#if __name__=='__main__':
 
-if __name__=='__main__':
+def main():
 
     parser = argparse.ArgumentParser(description= 'Finds the direction subject '
 	      'to direction-dependent effects.')
@@ -162,8 +185,8 @@ if __name__=='__main__':
             'format: "#format:name, ra_d, dec_d, i"', default=None)
 
     add('-fth', '--flux-thresh', dest='flux_threshold', help='Flux threshold. Regions '
-        'in an image with flux > fth * noise are considered. Default=5',
-         default=5, type=float)
+        'in an image with flux > fth * noise are considered. Default=10',
+         default=10, type=float)
 
     add('-vth', '--variance-thresh', dest='variance_threshold', help='Local variance threshold. ' 
         'Sources with varinace > vth * noise are considered. Defautl=5.', default=5, type=float)
@@ -192,39 +215,54 @@ if __name__=='__main__':
     
     args = parser.parse_args()
 
+    print('>>> ')    
+    print('>>> pyddi program begins.')
     image = get_pkg_data_filename(args.image)
     data, hdr, wcs = read_data(image)
     noise = negative_noise_estimates(data) # the noise
+    print('>>> The estimated noise is %e Jy/beam.'%noise)
+    print('>>> ')
 
     psf = hdr['bmaj'] # in degrees
     pixels = abs(hdr['CDELT2']) # in degrees
     psf_pix = int(round((psf/pixels))) # in pixels
 
     if args.use_catalog:
+        print('>>> Using the provided catalog for the identification.')
         catalog = Tigger.load(args.catalog, verbose=False)
         fluxes = [src.flux.I for src in catalog.sources]
         index = numpy.where(fluxes > (args.flux_threshold * noise))[0]
         sources  = [catalog.sources[i] for i in index]
+        print('>>> The catalog had %d number of sources but only %d'
+              ' have fluxes %d times above the noise.'%(len(fluxes), len(sources),
+               args.flux_threshold))
         ra  = numpy.asarray([float(numpy.rad2deg(src.pos.ra))  for src in sources])
         dec = numpy.asarray([float(numpy.rad2deg(src.pos.dec)) for src in sources])
         peak = numpy.asarray([float(numpy.rad2deg(src.flux.I)) for src in sources])
+        print('>>> ')
 
     else:
         # if not use catalog, use the image. 
+        print('>>> Using the image data for the identification...')
         threshold = args.flux_threshold * noise
         r, d = numpy.where(data > threshold)
+        print('>>> We found a total of %d pixels that are %d times above the noise.'
+               ' Okay, don"t be scared. It might take a little longer. I encourage'
+               ' increasing the threshold. ' %(len(r), args.flux_threshold))
         ra, dec = wcs.all_pix2world(d, r, 0) # in degrees
-        # Group only when using the image data
-        ra, dec, peak = group_sources(ra, dec, data, wcs, tolerance= psf * args.group_pixels)        
+        tolerance =  psf * args.group_pixels
+        print('>>> ')
+        ra, dec, peak = group_sources(ra, dec, data, wcs, tolerance=tolerance)        
+        print('>>> ')
     
     ra, dec, peak = compute_local_variance(ra, dec, peak, data, wcs, noise, 
              thresh=args.variance_threshold, region_in_psfs=args.variance_size,
              psf_pix=psf_pix, mask_peak=False)
-
+    print('>>> ')
     # correlation if a psf is provided.
     if args.psf_image:
         ra, dec, peak = compute_correlation(ra, dec, peak, data, args.psf_image, 
-             psf_pix, region_in_psfs=args.correlation_size, 
+             wcs, psf_pix, region_in_psfs=args.correlation_size, 
              thresh=args.correlation_threshold)        
 
     first_line = ['#format:name','ra_d','dec_d','i']
@@ -257,6 +295,8 @@ if __name__=='__main__':
             if len(within) > 0:
                  src.setTag('dE', True)
         lsm.save(args.catalog)
+    print('>>> ')
+    print('>>> Direction-dependent identification completed.')
 
    
-
+main()
