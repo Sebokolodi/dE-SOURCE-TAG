@@ -1,14 +1,28 @@
 # pyddi
 
-This tool is for identifying regions in an image that require direction-dependent calibration. It does this mainly based on an image rather than the sky model. It returns a Tigger sky model with locations of the directions of interest in terms of ra and dec (in degrees), note that this sky model should never be used for anything else other than reference location. The user can supply the actual sky model in which the tool will tag the sources that corresponds to the above directions.
+### Description 
 
-This tool does the following:
+This tool is designed to identify regions in an image that require direction-dependent calibration. 
+ 
+### Installation
 
-1. It searches for high intensity pixels given the user provided limit.   
-2. For computation purposes, pixels separated by less than some user-specified radius are grouped together, and for a given group a position and intensity of the brightest pixel are returned.  
-3. Pixels from step 2 are then evaluated further. The local variance around these pixels is computed and those with variance above a user-specified threshold are considered.  
-4. If the user provides a PSF image, a region taken from the PSF is correlated with region around each pixels from step 3. This step seems to eliminate spurious pixels quite well and thus, we highly recommend this step.
-5. Lastly, a user can simply take the output sky model and use the positions for their own purposes. Alternatively, a user may provide a sky model to be cross-matched with this output sky model, and the sources that are near the directions are tagged as 'dE'. 
 
+### The Technique:
+
+This tool carries out the following steps:
+
+1. It searches for pixels in an image/sources in the sky model with high signal-to-noise ratio.   
+2. For computation purposes, pixels separated by a few beams are grouped. The position and intensity of the brightest pixel is returned for each group.  
+3. Computes the local variance around pixels from 2 or sources from 1, and selects those with high local variance.   
+4. If the user provides a PSF image, the PSF is correlated with each source/region. those with high correlation factor are selected.
+5. Lastly, the tool writes out a Tigger model containing the source/pixel positions that made it through step 3 or 4. 
+
+    5.1 However, a user can supply an actual sky model and the tool will cross match with above model, and tag sources in this former model as 'dE'.
+  
+    5.2 Or, alternatively, a user can specify whether they want their actual sky model to be used for the identification rather than pixels from an image, in which case, the sources in the sky model will be updated with tags 'dE'. 
+    
+    5.3 If a sky model is not supplied, source a model with positions will be returned. This model should not be used for anything except the positions.
+
+### Implementation  
 
 Implementation: ./dd-source-identification.py  -h 
