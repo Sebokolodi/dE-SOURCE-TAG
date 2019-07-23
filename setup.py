@@ -10,7 +10,8 @@ scripts = ["bin/" + j for j in os.listdir("bin") ]
 requires = [
     "numpy",
     "astropy",
-    "argparse"
+    "argparse",
+    "astro-tigger"
 ]
 
 
@@ -23,7 +24,6 @@ setup(name = "pyddi",
     packages = find_packages(),
     install_requires = requires,
     scripts = scripts, 
-    dependency_links=['https://github.com/o-smirnov/tigger.git'],
     license = "GNU GPL v2",
     classifiers = [],
  )
