@@ -1,5 +1,3 @@
-#! /usr/bin/env python
-
 # This script tags locations in the source model/image that are subject to direction-dependent effects.
 # mll.sebokolodi@gmail.com or lsebokolodi@ska.ac.za
 
@@ -303,6 +301,3 @@ def main():
         lsm.save(args.catalog)
     print('>>> ')
     print('>>> Direction-dependent identification completed.')
-
-   
-main()
