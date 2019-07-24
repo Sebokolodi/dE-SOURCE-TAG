@@ -1,7 +1,9 @@
 import os
 from setuptools import setup, find_packages
 
+pkg = 'pyddi'
 __version__ = "0.0.1"
+build_root = os.path.dirname(__file__)
 
 scripts = ["bin/" + j for j in os.listdir("bin") ]
 
@@ -18,7 +20,7 @@ def readme():
         return f.read()
 
 
-setup(name = "pyddi",
+setup(name = pkg,
     version=__version__,
     description="Identifies Sources that Require Direction-Dependent Calibration.",
     author="Lerato Sebokolodi",
