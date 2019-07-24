@@ -1,0 +1,23 @@
+language: python
+sudo: required
+matrix:
+  include:
+  - env: TARGET=pep8
+  - env: TARGET=py2
+  - env: TARGET=py3
+  allow_failures:
+  - env: TARGET=pep8
+script:
+- true
+install:
+- docker build . -t ${TARGET} -f .travis/${TARGET}.docker
+deploy:
+  provider: pypi
+  user: user
+  password:
+    secure: enrypted-pass
+  true:
+  on:
+    tags: true
+    distributions: sdist bdist_wheel
+repo: Sebokolodi/pyddi
