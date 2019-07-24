@@ -29,7 +29,7 @@ setup(name = "pyddi",
     packages=find_packages(),
     install_requires=requires,
     scripts=scripts,
-    license="GNU GPL v2",
+    license="GNU GPL v3",
     classifiers=["Intended Audience :: Developers",
                  "Topic :: Scientific/Engineering :: Astronomy",
                  "Topic :: Software Development :: Libraries :: Python Modules"])
