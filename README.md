@@ -32,7 +32,7 @@ This tool carries out the following steps:
 
 ### Implementation  
 
-Implementation: pyddi  -h    
+For help: pyddi  -h    
 
     Finds the direction subject to direction-dependent effects.  
   
