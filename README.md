@@ -37,11 +37,11 @@ Test 1:
   
   Test 3: Without the PSF
   
-    ./dd-source-identification.py -i examples/test/kat7restored.fits -o test-output-2
+    ./dd-source-identification.py -i examples/test/kat7restored.fits -o test-output-3
     
   Test 4: Changing some useful thresholds
   
-    ./dd-source-identification.py -i examples/test/kat7restored.fits -p examples/test/kat7psf.fits -o test-output-2 -vth 10 -cth 0.7 -gpix 50
+    ./dd-source-identification.py -i examples/test/kat7restored.fits -p examples/test/kat7psf.fits -vth 10 -cth 0.7 -gpix 50  -o test-output-4 
     
   
  
