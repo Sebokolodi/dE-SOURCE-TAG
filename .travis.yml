@@ -1,0 +1,22 @@
+language: python
+sudo: required
+matrix:
+  include:
+  - env: TARGET=pep8
+  - env: TARGET=py2
+  - env: TARGET=py3
+  allow_failures:
+  - env: TARGET=pep8
+script:
+- true
+install:
+- docker build . -t ${TARGET} -f .travis/${TARGET}.docker
+deploy:
+  provider: pypi
+  user: lerato
+  password:
+    secure: BeFPlQdk7O4HAvdG4NoULVfp4aYQydKq3kgqjWJ+mNzIVvYYbstHFMNsQlYTqOan5vY0+l7QypYmetsqvpj/JM8I2yICpvpkpKprwJlFmdyjfIFg07JA3vrTkqRvq3AawUmXti9WNd0Yw5NqoJk6I5hODZ6QvcfxaoIB5G+xhB3dcl1c9uj67ZkpFL25lF+JfQat9A2OF7Rf4MXF9r81zF6IAnXIYc3GFtKK+d3i8cJlvYX82aitgnceyr0DFa2Q6SpoUjWeMOJMI3dsBzW+ymmyjqWoB/I1JpIR+c+ZRb8MlLxcvyE+ZJDBDPi+UzwSB2SwXdEB4hRmA7u4a+EYtEeDD0DUbWHnGqeLA2Q5LbbD4W/nqTsgt72c/LcTEO1AIOTq/56wggy1G9Bdhw1xhaQcOVchf0SujVlRwfbu39xPzVb/HRRCdYrlwLLR7j80k9Fw2ch17E0nyeCxsRDcmbbHO1X0U1p6CH6fCacziL0MMPDjDI1Bo5JEGRaW+dxwD/1IDFSAFO+pFK9A87xemLM+KgmFHQTYseH/TRLHswD9kVeEzmVJ3GuSm1VC0uevybahW9QdvbXEub7YxDWmQ0F5VMoh27Oc8PsddZWx0byI378A8KiymG1MBNerx9JSlEkr/vvqOSnZFK+Wah98eH6Tgq9iDBmVI/MpW0qTMaQ=
+  true:
+    tags: true
+    distributions: sdist bdist_wheel
+repo: Sebokolodi/pyddi

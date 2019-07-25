@@ -1,15 +1,12 @@
-#! /usr/bin/env python
-
 # This script tags locations in the source model/image that are subject to direction-dependent effects.
 # mll.sebokolodi@gmail.com or lsebokolodi@ska.ac.za
 
-from astropy.io import fits
-from astropy.wcs import WCS
 import numpy
-from astropy.utils.data import get_pkg_data_filename
 import os
 import Tigger
 import argparse
+from astropy.io import fits
+from astropy.wcs import WCS
 
 
 _path = os.path.realpath(__file__)
@@ -223,8 +220,7 @@ def main():
 
     print('>>> ')    
     print('>>> pyddi program begins.')
-    image = get_pkg_data_filename(args.image)
-    data, hdr, wcs = read_data(image)
+    data, hdr, wcs =  read_data(args.image)
     noise = negative_noise_estimates(data) # the noise
     print('>>> The estimated noise is %e Jy/beam.'%noise)
     print('>>> ')
@@ -303,6 +299,3 @@ def main():
         lsm.save(args.catalog)
     print('>>> ')
     print('>>> Direction-dependent identification completed.')
-
-   
-main()
