@@ -3,3 +3,4 @@ RUN docker-apt-install python3-pip
 ADD . /code
 WORKDIR /code
 RUN pip3 install .
+RUN pyddi -i examples/kat7restored.fits -p examples/kat7psf.fits -vth 10 -cth 0.7 -gpix 50  -o test-output-4
