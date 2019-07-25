@@ -29,19 +29,19 @@ Implementation: pyddi  -h
 
 Test 1:
 
-    pyddi -i examples/test/kat7restored.fits -c examples/test/kat7restored.gaul -p examples/test/kat7psf.fits -usec -o test-output-1 
+    pyddi -i examples/kat7restored.fits -c examples/kat7restored.gaul -p examples/kat7psf.fits -usec -o test-output-1 
  
  Test 2: Without a catalog
  
-    pyddi -i examples/test/kat7restored.fits -p examples/test/kat7psf.fits -o test-output-2
+    pyddi -i examples/kat7restored.fits -p examples/kat7psf.fits -o test-output-2
   
   Test 3: Without the PSF
   
-    pyddi -i examples/test/kat7restored.fits -o test-output-3
+    pyddi -i examples/kat7restored.fits -o test-output-3
     
   Test 4: Changing some useful thresholds
   
-    pyddi -i examples/test/kat7restored.fits -p examples/test/kat7psf.fits -vth 10 -cth 0.7 -gpix 50  -o test-output-4 
+    pyddi -i examples/kat7restored.fits -p examples/kat7psf.fits -vth 10 -cth 0.7 -gpix 50  -o test-output-4 
     
   
  
