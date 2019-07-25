@@ -1,13 +1,12 @@
 # This script tags locations in the source model/image that are subject to direction-dependent effects.
 # mll.sebokolodi@gmail.com or lsebokolodi@ska.ac.za
 
-from astropy.io import fits
-from astropy.wcs import WCS
 import numpy
-from astropy.utils.data import get_pkg_data_filename
 import os
 import Tigger
 import argparse
+from astropy.io import fits
+from astropy.wcs import WCS
 
 
 _path = os.path.realpath(__file__)
@@ -221,8 +220,9 @@ def main():
 
     print('>>> ')    
     print('>>> pyddi program begins.')
-    image = get_pkg_data_filename(args.image)
-    data, hdr, wcs = read_data(image)
+    hdu = fits.open(args.image)
+    data, hdr = hdu[0].data, hdu[0].header
+    wcs = WCS(hdr).celestial
     noise = negative_noise_estimates(data) # the noise
     print('>>> The estimated noise is %e Jy/beam.'%noise)
     print('>>> ')
@@ -249,6 +249,7 @@ def main():
         # if not use catalog, use the image. 
         print('>>> Using the image data for the identification...')
         threshold = args.flux_threshold * noise
+        data = data[0][0]  # Since data.shae is (1, 1, n, n) this returns (n, n)
         r, d = numpy.where(data > threshold)
         print('>>> We found a total of %d pixels that are %d times above the noise.'
                ' Okay, don"t be scared. It might take a little longer. I encourage'
