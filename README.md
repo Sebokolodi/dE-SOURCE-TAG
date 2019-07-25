@@ -26,3 +26,26 @@ This tool carries out the following steps:
 ### Implementation  
 
 Implementation: ./dd-source-identification.py  -h 
+
+Test 1:
+
+    ./dd-source-identification.py -i examples/test/kat7restored.fits -c examples/test/kat7restored.gaul -pexamples/test/kat7psf.fits -usec -o test-output-1 
+ 
+ Test 2: Without a catalog
+ 
+    ./dd-source-identification.py -i examples/test/kat7restored.fits -p examples/test/kat7psf.fits -o test-output-2
+  
+  Test 3: Without the PSF
+  
+    ./dd-source-identification.py -i examples/test/kat7restored.fits -o test-output-3
+    
+  Test 4: Changing some useful thresholds
+  
+    ./dd-source-identification.py -i examples/test/kat7restored.fits -p examples/test/kat7psf.fits -vth 10 -cth 0.7 -gpix 50  -o test-output-4 
+    
+  
+ 
+ 
+ 
+ 
+
