@@ -33,7 +33,7 @@ Test 1:
  
  Test 2: Without a catalog
  
-    ./dd-source-identification.py -i examples/test/kat7restored.fits -pexamples/test/kat7psf.fits -o test-output-2
+    ./dd-source-identification.py -i examples/test/kat7restored.fits -p examples/test/kat7psf.fits -o test-output-2
   
   Test 3: Without the PSF
   
@@ -41,7 +41,7 @@ Test 1:
     
   Test 4: Changing some useful thresholds
   
-    ./dd-source-identification.py -i examples/test/kat7restored.fits -pexamples/test/kat7psf.fits -o test-output-2 -vth 10 -cth 0.7 -gpix 50
+    ./dd-source-identification.py -i examples/test/kat7restored.fits -p examples/test/kat7psf.fits -o test-output-2 -vth 10 -cth 0.7 -gpix 50
     
   
  
