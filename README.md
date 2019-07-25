@@ -29,7 +29,7 @@ Implementation: ./dd-source-identification.py  -h
 
 Test 1:
 
-    ./dd-source-identification.py -i examples/test/kat7restored.fits -c examples/test/kat7restored.gaul -pexamples/test/kat7psf.fits -usec -o test-output-1 
+    ./dd-source-identification.py -i examples/test/kat7restored.fits -c examples/test/kat7restored.gaul -p examples/test/kat7psf.fits -usec -o test-output-1 
  
  Test 2: Without a catalog
  
