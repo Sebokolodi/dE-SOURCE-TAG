@@ -6,6 +6,13 @@ This tool is designed to identify regions in an image that require direction-dep
  
 ### Installation
 
+Installation from source, working directory where source is checked out
+
+    pip install .
+
+This package is available on PYPI, allowing
+
+    pip install pyddi
 
 ### The Technique:
 
