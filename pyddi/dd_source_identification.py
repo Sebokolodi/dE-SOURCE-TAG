@@ -220,9 +220,7 @@ def main():
 
     print('>>> ')    
     print('>>> pyddi program begins.')
-    hdu = fits.open(args.image)
-    data, hdr = hdu[0].data, hdu[0].header
-    wcs = WCS(hdr).celestial
+    data, hdr, wcs =  read_data(args.image)
     noise = negative_noise_estimates(data) # the noise
     print('>>> The estimated noise is %e Jy/beam.'%noise)
     print('>>> ')
@@ -249,7 +247,6 @@ def main():
         # if not use catalog, use the image. 
         print('>>> Using the image data for the identification...')
         threshold = args.flux_threshold * noise
-        data = data[0][0]  # Since data.shape is (1, 1, n, n) this returns (n, n)
         r, d = numpy.where(data > threshold)
         print('>>> We found a total of %d pixels that are %d times above the noise.'
                ' Okay, don"t be scared. It might take a little longer. I encourage'
