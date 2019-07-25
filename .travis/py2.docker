@@ -2,5 +2,5 @@ FROM kernsuite/base:4
 RUN docker-apt-install python-pip
 ADD . /code
 WORKDIR /code
-RUN pip install .
-RUN pyddi -i examples/kat7restored.fits -p examples/kat7psf.fits -vth 10 -cth 0.7 -gpix 50  -o test-output-4
+RUN pip install /code
+RUN pyddi -i /code/examples/kat7restored.fits -p /code/examples/kat7psf.fits -vth 10 -cth 0.7 -gpix 50  -o test-output-4
