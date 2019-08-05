@@ -182,9 +182,9 @@ def main():
     parser = argparse.ArgumentParser(description= 'Finds the direction subject '
 	      'to direction-dependent effects.')
     add = parser.add_argument
-    add('-i', '--img', dest='image', help='Image of interest. Required.')
-    add('-p', '--psf', dest='psf_image', help='The psf image. Default=None.', default=None)
-    add('-c', '--cat', dest='catalog', help='Sky model as LSM/txt. Default=None. Must be in Tigger '
+    add('-i', '--image', dest='image', help='Image of interest. Required.')
+    add('-p', '--psf-image', dest='psf_image', help='The psf image. Default=None.', default=None)
+    add('-c', '--sky-model', dest='catalog', help='Sky model as LSM/txt. Default=None. Must be in Tigger '
             'format: "#format:name, ra_d, dec_d, i"', default=None)
 
     add('-fth', '--flux-thresh', dest='flux_threshold', help='Flux threshold. Regions '
@@ -194,7 +194,7 @@ def main():
     add('-vth', '--variance-thresh', dest='variance_threshold', help='Local variance threshold. ' 
         'Sources with varinace > vth * noise are considered. Defautl=5.', default=5, type=float)
 
-    add('-vsize', '--var-size', dest='variance_size', help='The size of the region to compute ' 
+    add('-vsize', '--variance-size', dest='variance_size', help='The size of the region to compute ' 
         ' the local variance. E.g vsize=10, gives a region of size = 10 * resolution.'
         ' The resolution is in pixels. Default=10', 
         default=10, type=int)
@@ -202,17 +202,17 @@ def main():
     add('-cth', '--correlation-thresh', dest='correlation_threshold', help='Correlation threshold. ' 
         'Sources with correlation factor > cth are considered. Default=0.5', default=0.5, type=float)
 
-    add('-csize', '--corr-size', dest='correlation_size', help='The size of the region to compute ' 
+    add('-csize', '--correlation-size', dest='correlation_size', help='The size of the region to compute ' 
         ' correlation. see vsize. Default=5', default=5, type=int)
 
-    add('-gpix', '--group-pix', dest='group_pixels', help='The size of the region to group the pixels, ' 
+    add('-gpix', '--group-pixels', dest='group_pixels', help='The size of the region to group the pixels, ' 
         ' in terms of psf-size. The psf is in degrees. e.g gpix=20, gives 20xpsf. Default=20', 
           default=20, type=float)
 
-    add('-usec', '--use-cat', dest='use_catalog', help='Use -cat for the identification and not only -i.', 
+    add('-usec', '--use-catalog', dest='use_catalog', help='Use -cat for the identification and not only -i.', 
           default=False, type=bool)
 
-    add('-o', '--outpref', dest='output_prefix', help='The prefix for the output file containing '
+    add('-o', '--prefix', dest='output_prefix', help='The prefix for the output file containing '
         ' directions in RA, DEC both in degrees, and peak flux of the pixels. Default=None',
           default=None, type=str)
     
