@@ -184,7 +184,7 @@ def main():
     add = parser.add_argument
     add('-i', '--image', dest='image', help='Image of interest. Required.')
     add('-p', '--psf-image', dest='psf_image', help='The psf image. Default=None.', default=None)
-    add('-c', '--sky-model', dest='catalog', help='Sky model as LSM/txt. Default=None. Must be in Tigger '
+    add('-c', '--catalog', dest='catalog', help='Sky model as LSM/txt. Default=None. Must be in Tigger '
             'format: "#format:name, ra_d, dec_d, i"', default=None)
 
     add('-fth', '--flux-thresh', dest='flux_threshold', help='Flux threshold. Regions '
