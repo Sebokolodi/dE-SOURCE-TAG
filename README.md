@@ -51,23 +51,23 @@ For help: pyddi  -h
        -vth VARIANCE_THRESHOLD, --variance-thresh VARIANCE_THRESHOLD   
                   Local variance threshold. Sources with varinace > vth   
                   * noise are considered. Defautl=5.   
-       -vsize VARIANCE_SIZE, --var-size VARIANCE_SIZE   
+       -vsize VARIANCE_SIZE, --variance-size VARIANCE_SIZE   
                   The size of the region to compute the local variance.  
                   E.g vsize=10, gives a region of size = 10 *   
                   resolution. The resolution is in pixels. Default=10   
        -cth CORRELATION_THRESHOLD, --correlation-thresh CORRELATION_THRESHOLD   
                   Correlation threshold. Sources with correlation factor   
                   > cth are considered. Default=0.5    
-       -csize CORRELATION_SIZE, --corr-size CORRELATION_SIZE   
+       -csize CORRELATION_SIZE, --correlation-size CORRELATION_SIZE   
                   The size of the region to compute correlation. see   
                   vsize. Default=5   
-       -gpix GROUP_PIXELS, --group-pix GROUP_PIXELS   
+       -gpix GROUP_PIXELS, --group-pixels GROUP_PIXELS   
                   The size of the region to group the pixels, in terms   
                   of psf-size. The psf is in degrees. e.g gpix=20, gives   
                   20xpsf. Default=20   
-       -usec USE_CATALOG, --use-cat USE_CATALOG   
+       -usec USE_CATALOG, --use-catalog USE_CATALOG   
                   Use -cat for the identification and not only -i.    
-       -o OUTPUT_PREFIX, --outpref OUTPUT_PREFIX    
+       -o OUTPUT_PREFIX, -prefix OUTPUT_PREFIX    
                   The prefix for the output file containing directions   
                   in RA, DEC both in degrees, and peak flux of the   
                   pixels. Default=None  
