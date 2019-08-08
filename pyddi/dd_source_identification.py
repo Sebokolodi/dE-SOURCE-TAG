@@ -7,6 +7,7 @@ import Tigger
 import argparse
 from astropy.io import fits
 from astropy.wcs import WCS
+from Tigger.Coordinates import angular_dist_pos_angle as dist
 
 
 _path = os.path.realpath(__file__)
@@ -105,12 +106,13 @@ def compute_local_variance(ra, dec, peak, data, wcs, noise, thresh,
         if (y + size < ny) or (y - size > 0):
             if (x + size < nx) or (x - size > 0):
                 if mask_peak:
-                    data[y-psf_pix: y + psf_pix, x-psf_pix: x+psf_pix] = float(numpy.nan)
-                    sub_region = data[y-size: y+size, x-size: x+size]
+                    data[abs(y-psf_pix): y + psf_pix, abs(x-psf_pix): x+psf_pix] = float(numpy.nan)
+                    sub_region = data[abs(y-size): y+size, abs(x-size): x+size]
                 else:
-                    sub_region = data[y-size: y+size, x-size: x+size]
+                    sub_region = data[abs(y-size): y+size, abs(x-size): x+size]
                 sub_region = sub_region.flatten()
                 sub_region = sub_region[~numpy.isnan(sub_region)]
+                sub_region = abs(sub_region[sub_region < 0]) # use negative pixels
                 if len(sub_region) > 0:
                     local_variance = sub_region.std()  
                 else:
@@ -156,7 +158,7 @@ def compute_correlation(ra, dec, peak, data, psfimage, wcs, psf_pix,
 
         if (y + size < ny) or (y - size > 0):
             if (x + size < nx) or (x - size > 0):
-                data_region = data[y-size : y+size, x-size:x+size].flatten()
+                data_region = data[abs(y-size): y+size, abs(x-size):x+size].flatten()
                 normalized_data = (data_region-data_region.min()) / \
                                   (data_region.max()-data_region.min())
                 correlate = numpy.corrcoef((normalized_data, psf_subregion))
@@ -208,6 +210,9 @@ def main():
     add('-gpix', '--group-pixels', dest='group_pixels', help='The size of the region to group the pixels, ' 
         ' in terms of psf-size. The psf is in degrees. e.g gpix=20, gives 20xpsf. Default=20', 
           default=20, type=float)
+
+    add('-rexcl', '--exclude-radius', dest='radius_exclude', help='The radius to exclude in arcseconds.'
+		' default=0', default=0, type=float)
 
     add('-usec', '--use-catalog', dest='use_catalog', help='Use -cat for the identification and not only -i.', 
           default=False, type=bool)
@@ -284,8 +289,10 @@ def main():
 
     output.close()
 
-    if args.catalog:
+    ra0 = numpy.deg2rad(hdr['CRVAL1'])
+    dec0 = numpy.deg2rad(hdr['CRVAL2'])
 
+    if args.catalog:
         # if a catalog is provided, then tag the sources.
         lsm = Tigger.load(args.catalog)
         directions = Tigger.load(outfile + '.txt')
@@ -295,7 +302,10 @@ def main():
             decpos = src.pos.dec # in radians
             within = directions.getSourcesNear(rapos, decpos, tolerance)
             if len(within) > 0:
-                 src.setTag('dE', True)
+                if dist(ra0, dec0, rapos, decpos)[0] > numpy.deg2rad(
+                                        args.radius_exclude/3600.0):
+                    src.setTag('dE', True)
+
         lsm.save(args.catalog)
     print('>>> ')
     print('>>> Direction-dependent identification completed.')
