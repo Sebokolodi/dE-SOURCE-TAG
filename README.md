@@ -65,6 +65,8 @@ For help: pyddi  -h
                   The size of the region to group the pixels, in terms   
                   of psf-size. The psf is in degrees. e.g gpix=20, gives   
                   20xpsf. Default=20   
+       -rexcl, RADIUS_EXCLUDE, --exclude-radius RADIUS_EXCLUDE
+                The radius to exclude in arcseconds. default=0.
        -usec USE_CATALOG, --use-catalog USE_CATALOG   
                   Use -cat for the identification and not only -i.    
        -o OUTPUT_PREFIX, -prefix OUTPUT_PREFIX    
